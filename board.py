@@ -9,6 +9,13 @@ class Board:
     def __init__(self):
         self.board = [([' ']*Board.size) for row in range(Board.size)]
         self.flatBoard = [x for y in self.board for x in y]
+        self.currentPlayer = 'X'
+
+    def updateFlatBoard(self):
+        self.flatBoard = [x for y in self.board for x in y]
+    
+    def updateBoard(self):
+        self.board = [self.flatBoard[x:x+Board.size] for x in range(0, Board.size**2, Board.size)]
     
     def full(self):
         for item in self.flatBoard:
@@ -23,41 +30,35 @@ class Board:
         return True
     
     def turn(self):
-        Os = len(filter(lambda o: o == 'O', self.flatBoard))
-        Xs = len(filter(lambda x: x == 'X', self.flatBoard))
-        if Ox <= Xs:
+        Os = len(list(filter(lambda o: o == 'O', self.flatBoard)))
+        Xs = len(list(filter(lambda x: x == 'X', self.flatBoard)))
+        if Os < Xs:
            self.currentPlayer = 'O'
         else:
             self.currentPlayer = 'X'
     
-    def diag(board):
-        return [board[n][n] for n in range(0,Board.size)]
-
-    def rdiag(board):
-        return diag(transpose(board))
-    
-    def transpose(board): 
-        return [*zip(*board)]
-    
-    def winRow(self,board,row,col):
-        if board[row][col] == self.currentPlayer:
-            if (col == Board.size - 1):
-                return True
-            else:
-                return winRow(row,col+1)
+    def winRow(self,boardRow):
+        
+        if len(list(filter(lambda p: p == self.currentPlayer, boardRow))) == 3:
+            return True
         else:
             return False
+        
     
     def won(self):
+        # Checks rows
         for i in range(Board.size):
-            if self.winRow(self.board,i,0):
+            if self.winRow(self.board[i]):
                 return True
+        # Checks columns
         for i in range(Board.size):
-            if self.winRow(transpose(self.board),i,0):
+            if self.winRow(transpose(self.board)[i]):
                 return True
-        if self.winRow(diag(self.board),0,0):
+        # Checks left diagonal
+        if self.winRow(diag(self.board)):
             return True
-        elif self.winRow(rdiag(self.board),0,0):
+        # Checks right diagonal
+        elif self.winRow(rdiag(self.board)):
             return True
         else:
             return False
@@ -68,14 +69,12 @@ class Board:
         else:
             return False
     
+    # TODO: Refactor to use return rather than multiple breaks
+    # https://stackoverflow.com/questions/189645/how-to-break-out-of-multiple-loops-in-python
     def makeMove(self,move):
-        counter = 0
-        for i in range(Board.size):
-            for j in range(Board.size):
-                if counter == move:
-                    board[i][j] = self.currentPlayer
-                else:
-                    counter += 1
+        self.flatBoard[move] = self.currentPlayer
+        self.updateBoard()
+        
 
     def showRow(self,row):
         for col in range(Board.size):
@@ -98,8 +97,14 @@ class Board:
 # General purpose functions
 
 
-if __name__ == "__main__":
-    board = Board()
-    board.showBoard()
+def diag(board):
+    return [board[n][n] for n in range(0,Board.size)]
+
+def rdiag(board):
+    return diag(transpose(board))
+    
+def transpose(board): 
+    return [*zip(*board)]
+
 
     
