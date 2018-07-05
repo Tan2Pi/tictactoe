@@ -1,6 +1,4 @@
-# class Player:
-#     __init__(self, player = ' '):
-#         self.player = player
+from copy import deepcopy
     
 
 class Board:
@@ -11,8 +9,16 @@ class Board:
         self.flatBoard = [x for y in self.board for x in y]
         self.currentPlayer = 'X'
 
-    def updateFlatBoard(self):
-        self.flatBoard = [x for y in self.board for x in y]
+    def __deepcopy__(self):
+        _copy = Board()
+        _copy.board = self.board
+        _copy.currentPlayer = self.currentPlayer
+        _copy.flatBoard = self.flatBoard
+        return _copy
+
+    def copy(self):
+        copyBoard = self.board
+        return copyBoard
     
     def updateBoard(self):
         self.board = [self.flatBoard[x:x+Board.size] for x in range(0, Board.size**2, Board.size)]
@@ -68,9 +74,7 @@ class Board:
             return True
         else:
             return False
-    
-    # TODO: Refactor to use return rather than multiple breaks
-    # https://stackoverflow.com/questions/189645/how-to-break-out-of-multiple-loops-in-python
+
     def makeMove(self,move):
         self.flatBoard[move] = self.currentPlayer
         self.updateBoard()
@@ -94,7 +98,7 @@ class Board:
                 print('-----------')
             self.showRow(row)
 
-# General purpose functions
+# Board helper functions
 
 
 def diag(board):

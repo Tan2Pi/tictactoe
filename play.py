@@ -1,5 +1,6 @@
 from board import Board
 
+# Player X will be the computer, and will always go first
 def play():
     board = Board()
     while True:
