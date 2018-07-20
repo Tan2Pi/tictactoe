@@ -1,9 +1,11 @@
 from board import Board
+from copy import deepcopy
 
 class GameNode:
     def __init__(self, board):
         self.board = board
         self.children = []
+        self.rank = 0
     
     def addChild(self, obj):
         self.children.append(obj)
@@ -11,12 +13,15 @@ class GameNode:
 class GameTree:
     depth = 9
     def __init__(self, board):
-        self.refreshTree(board)
+        self.refresh(board)
 
     def moves(self, node):
         for i in range(Board.size**2):
             if node.board.validMove(i):
-                newNode = GameNode(self.board.deepcopy().board.makeMove(i))
+                newBoard = deepcopy(node.board)
+                newBoard.makeMove(i)
+                newBoard.turn()
+                newNode = GameNode(newBoard)
                 node.addChild(newNode)
     
     # def depthFirst(self, node):
@@ -26,20 +31,25 @@ class GameTree:
     #         else:
     #             self.depthFirst(child.children)
 
-    def refreshTree(self, board):
+    def refresh(self, board):
         self.root = GameNode(board)
         self.moves(self.root)
     
+    def bestMove(self):
+        miniMax(self.root)
+        bestMove = max(self.root.children, key = lambda x: x.rank)
+        return bestMove.board
+    
 
 def miniMax(node):
-    if node.board.currentPlayer = 'X':
+    if node.board.currentPlayer == 'X':
         if node.board.won():
             node.rank = 1
         elif node.board.full():
             node.rank = 0
         else:
             for child in node.children:
-                miniMax(child)
+                node.rank = miniMax(child)
     else:
         if node.board.won():
             node.rank = -1
@@ -47,7 +57,7 @@ def miniMax(node):
             node.rank = 0
         else:
             for child in node.children:
-                miniMax(child)
+                node.rank = miniMax(child)
 
 
 

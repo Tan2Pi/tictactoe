@@ -6,14 +6,14 @@ class Board:
 
     def __init__(self):
         self.board = [([' ']*Board.size) for row in range(Board.size)]
-        self.flatBoard = [x for y in self.board for x in y]
+        self.flatten()
         self.currentPlayer = 'X'
 
-    def __deepcopy__(self):
+    def __deepcopy__(self, memo):
         _copy = Board()
-        _copy.board = self.board
-        _copy.currentPlayer = self.currentPlayer
-        _copy.flatBoard = self.flatBoard
+        _copy.board = deepcopy(self.board)
+        _copy.flatBoard = deepcopy(self.flatBoard)
+        _copy.currentPlayer = deepcopy(self.currentPlayer)
         return _copy
 
     def copy(self):
@@ -22,6 +22,9 @@ class Board:
     
     def updateBoard(self):
         self.board = [self.flatBoard[x:x+Board.size] for x in range(0, Board.size**2, Board.size)]
+
+    def flatten(self):
+        self.flatBoard = [x for y in self.board for x in y]
     
     def full(self):
         for item in self.flatBoard:
@@ -68,6 +71,17 @@ class Board:
             return True
         else:
             return False
+
+    def winOrDraw(self):
+        if self.won():
+            print('Player {} won!'.format(self.board.currentPlayer))
+            return True
+        elif self.full():
+            print('It\'s a tie!')
+            return True
+        else:
+            return False
+            
     
     def validMove(self,move):
         if move >= 0 and move <= Board.size*Board.size and self.flatBoard[move] == ' ':
@@ -92,11 +106,12 @@ class Board:
             if col == 2:
                 print('\n', end='')
     
-    def showBoard(self):
+    def show(self):
         for row in range(Board.size):
             if row == 1 or row == 2:
                 print('-----------')
             self.showRow(row)
+
 
 # Board helper functions
 
