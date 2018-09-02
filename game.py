@@ -1,9 +1,10 @@
 from board import Board
-from tree import GameNode, GameTree
+from minimax import miniMax
 
 class Game:
     def computerPlayer(self):
-        self.board = self.tree.bestMove()
+        move = miniMax(self.board)
+        self.board.makeMove(move['i'])
     
     def humanPlayer(self):
         while True:
@@ -31,7 +32,6 @@ class Game:
                 elif option == 2:
                     self.board = Board()
                     self.playing = True
-                    self.tree = GameTree(self.board)
                     self.singlePlayer()
                 else:
                     break
@@ -40,11 +40,14 @@ class Game:
         while True:
             self.board.show()
             if self.board.currentPlayer == 'X':
+                print('Player X is thinking...')
                 self.computerPlayer()
                 if self.board.won():
+                    self.board.show()
                     print('Player {} won!'.format(self.board.currentPlayer))
                     break
                 elif self.board.full():
+                    self.board.show()
                     print('It\'s a tie!')
                     break
                 else:

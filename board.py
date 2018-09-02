@@ -38,6 +38,14 @@ class Board:
                 return False
         return True
     
+    def empty_spaces(self):
+        spaces = []
+        for i in range(0,Board.size**2):
+            if self.flatBoard[i] == ' ':
+                spaces.append(i)
+        return spaces
+
+
     def turn(self):
         Os = len(list(filter(lambda o: o == 'O', self.flatBoard)))
         Xs = len(list(filter(lambda x: x == 'X', self.flatBoard)))
@@ -54,6 +62,9 @@ class Board:
             return False
         
     
+    def depth(self):
+        return len(self.empty_spaces())
+
     def won(self):
         # Checks rows
         for i in range(Board.size):
