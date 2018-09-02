@@ -1,6 +1,10 @@
 # tictactoe
 Play tic-tac-toe versus an A.I.!
 
+## Usage
+To play the game, download the repository and navigate to the directory where the file `game.py` is located and run the command `python game.py`.
+**Note**: This program was built using python 3, and may not be compatible with python 2.
+
 ## Implementation
 Text based tic-tac-toe was implemented using python and the alpha-beta variation of the minimax algorithm
 
