@@ -5,8 +5,8 @@ from math import inf
 
 class Game:
     def computerPlayer(self):
-        move = alphabeta(deepcopy(self.board.board), deepcopy(self.board.depth()), -inf, +inf, 'O')
-        self.board.makeMove(Board.conversion[(move['i'], move['j'])])
+        move = alphabeta(deepcopy(self.board.board), self.board.depth(), -inf, +inf, 'O')
+        self.board.makeMove(Board.conversion[(move['i'],move['j'])])
     
     def humanPlayer(self):
         while True:

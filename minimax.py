@@ -39,11 +39,11 @@ from math import inf
 
             
 def miniMax(board, depth):
-    if depth == 0 or state(board):
+    if depth == 0 or board.state():
         if board.currentPlayer == 'O' and board.won():
-            score = 1
+            score = 10
         elif board.currentPlayer == 'X' and board.won():
-            score = -1
+            score = -10
         else:
             score = 0
         return {'score': score, 'i': -1}
@@ -54,7 +54,9 @@ def miniMax(board, depth):
             maxBoard = deepcopy(board)
             maxBoard.makeMove(i)
             maxBoard.turn()
-            optimum = max(optimum, miniMax(maxBoard, depth-1), key = lambda p: p['score'])
+            value = miniMax(maxBoard, depth-1)
+            value['i'] = i
+            optimum = max(optimum, value, key = lambda s: s['score'])
         return optimum
     else:
         optimum = {'score': +inf, 'i': -1}
@@ -62,7 +64,9 @@ def miniMax(board, depth):
             minBoard = deepcopy(board)
             minBoard.makeMove(i)
             minBoard.turn()
-            optimum = min(optimum, miniMax(minBoard, depth-1), key = lambda p: p['score'])
+            value = miniMax(minBoard, depth-1)
+            value['i'] = i
+            optimum = min(optimum, value, key = lambda s: s['score'])
         return optimum
 
 def alphabeta(board, depth, alpha, beta, player):
@@ -96,6 +100,43 @@ def alphabeta(board, depth, alpha, beta, player):
             value['i'], value['j'] = i, j
             optimum = min(optimum, value, key = lambda s: s['score'])
             board[i][j] = ' '
+            beta = min(beta, optimum['score'])
+            if alpha >= beta:
+                break
+    
+    return optimum
+
+def alphabeta(board, depth, alpha, beta, player):
+    if depth == 0 or state(board):
+        if won(board, 'O'):
+            score = 10
+        elif won(board, 'X'):
+            score = -10
+        else:
+            score = 0
+        return {'score': score, 'i': -1, 'j': -1}
+    
+    if player == 'O':
+        optimum = {'score': -inf, 'i': -1, 'j': -1}
+        nextPlayer = 'X'
+    else:
+        optimum = {'score': +inf, 'i': -1, 'j': -1}
+        nextPlayer = 'X'
+    
+    for square in empty_squares(board):
+        i, j = square[0], square[1]
+        board[i][j] = player
+        value =  alphabeta(board, depth-1, alpha, beta, nextPlayer)
+        value['i'], value['j'] = i, j
+        board[i][j] = ' '
+
+        if player == 'O':
+            optimum = max(optimum, value, key = lambda s: s['score'])
+            alpha = max(alpha, optimum['score'])
+            if alpha >= beta:
+                break
+        else:
+            optimum = min(optimum, value, key = lambda s: s['score'])
             beta = min(beta, optimum['score'])
             if alpha >= beta:
                 break
