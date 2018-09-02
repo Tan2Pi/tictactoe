@@ -2,52 +2,6 @@ from board import Board
 from copy import deepcopy
 from math import inf
 
-# class GameNode:
-#     def __init__(self, board):
-#         self.board = board
-#         self.children = []
-    
-#     def addChild(self, obj):
-#         self.children.append(obj)
-
-# class GameTree:
-#     depth = 9
-#     def __init__(self, board):
-#         self.refresh(board)
-
-#     def moves(self, node):
-#         for i in range(Board.size**2):
-#             if node.board.validMove(i):
-#                 newBoard = deepcopy(node.board)
-#                 newBoard.makeMove(i)
-#                 newBoard.turn()
-#                 newNode = GameNode(newBoard)
-#                 newNode.depth = 1 + node.depth
-#                 while not newNode.board.full():
-#                     self.moves(newNode)
-#                 node.addChild(newNode)
-                
-
-    
-#     # def depthFirst(self, node):
-#     #     for child in self.root.children:
-#     #         if child.board == node.board:
-#     #             return child
-#     #         else:
-#     #             self.depthFirst(child.children)
-
-#     def refresh(self, board):
-#         self.root = GameNode(board)
-#         self.moves(self.root)
-        
-    
-#     def bestMove(self):
-#         miniMax(self.root)
-#         bestMove = max(self.root.children, key = lambda x: x.rank)
-#         return bestMove.board
-
-#     def isLeaf(self, node):
-#         return len(node.children) == 0
 
 # def miniMax(node):
 #     if node.board.currentPlayer == 'X':
@@ -68,38 +22,98 @@ from math import inf
 #                 node.rank = miniMax(child)
 
 
-def miniMax(board):
+# def miniMax(board, depth):
 
-    if board.currentPlayer == 'X':
-        optimal = {'score': -inf, 'i': 0}
-    else:
-        optimal = {'score': +inf, 'i': 0}
+#     if board.currentPlayer == 'O':
+#         optimal = {'score': -inf, 'i': 0}
+#     else:
+#         optimal = {'score': +inf, 'i': 0}
 
-    if board.depth() == 0:
-        if board.currentPlayer == 'X' and board.won():
+#     if depth == 0 or board.state():
+#         if board.currentPlayer == 'O' and board.won():
+#             score = 1
+#         elif board.currentPlayer == 'X' and board.won():
+#             score = -1
+#         else:
+#             score = 0
+#         return {'score': score, 'i': 0}
+    
+#     for i in board.empty_spaces():
+#         board.makeMove(i)
+#         board.turn()
+#         rank = miniMax(board, depth-1)
+#         board.flatBoard[i] = ' '
+#         board.turn()
+#         rank['i'] = i
+
+#         if board.currentPlayer == 'O':
+#             if rank['score'] > optimal['score']:
+#                 optimal = rank
+#         else:
+#             if rank['score'] < optimal['score']:
+#                 optimal = rank
+    
+#     return optimal
+
+            
+def miniMax(board, depth):
+    if depth == 0 or board.state():
+        if board.currentPlayer == 'O' and board.won():
             score = 1
-        elif board.currentPlayer == 'O' and board.won():
+        elif board.currentPlayer == 'X' and board.won():
             score = -1
         else:
             score = 0
-        return {'score': score, 'i': 0}
+        return {'score': score, 'i': -1}
     
-    for i in board.empty_spaces():
-        board.flatBoard[i] = board.currentPlayer
-        board.turn()
-        rank = miniMax(board)
-        board.flatBoard[i] = ' '
-        board.turn()
-        rank['i'] = i
+    if board.currentPlayer == 'O':
+        optimum = {'score': -inf, 'i': -1}
+        for i in board.empty_spaces():
+            maxBoard = deepcopy(board)
+            maxBoard.makeMove(i)
+            maxBoard.turn()
+            optimum = max(optimum, miniMax(maxBoard, depth-1), key = lambda p: p['score'])
+        return optimum
+    else:
+        optimum = {'score': +inf, 'i': -1}
+        for i in board.empty_spaces():
+            minBoard = deepcopy(board)
+            minBoard.makeMove(i)
+            minBoard.turn()
+            optimum = min(optimum, miniMax(minBoard, depth-1), key = lambda p: p['score'])
+        return optimum
 
-        if board.currentPlayer == 'X':
-            if rank['score'] > optimal['score']:
-                optimal = rank
+def alphabeta(board, depth, alpha, beta):
+    if depth == 0 or board.state():
+        if board.won('O'):
+            score = 1
+        elif board.won('X'):
+            score = -1
         else:
-            if rank['score'] < optimal['score']:
-                optimal = rank
+            score = 0
+        return {'score': score, 'i': -1}
     
-    return optimal
-
-            
-        
+    if board.currentPlayer == 'O':
+        optimum = {'score': -inf, 'i': -1}
+        for i in board.empty_spaces():
+            maxBoard = deepcopy(board)
+            maxBoard.makeMove(i)
+            maxBoard.turn()
+            optimum = max(optimum, alphabeta(maxBoard, depth-1, alpha, beta), key = lambda s: s['score'])
+            optimum['i'] = i
+            alpha = max(alpha, optimum['score'])
+            if alpha >= beta:
+                break
+        return optimum
+    else:
+        optimum = {'score': +inf, 'i': -1}
+        for i in board.empty_spaces():
+            minBoard = deepcopy(board)
+            minBoard.makeMove(i)
+            minBoard.turn()
+            optimum = min(optimum, alphabeta(minBoard, depth-1, alpha, beta), key = lambda s: s['score'])
+            optimum['i'] = i
+            beta = min(beta, optimum['score'])
+            if alpha >= beta:
+                break
+        return optimum

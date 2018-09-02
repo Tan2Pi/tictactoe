@@ -1,9 +1,11 @@
 from board import Board
-from minimax import miniMax
+from minimax import *
+from copy import deepcopy
+from math import inf
 
 class Game:
     def computerPlayer(self):
-        move = miniMax(self.board)
+        move = alphabeta(deepcopy(self.board), self.board.depth(), +inf, -inf)
         self.board.makeMove(move['i'])
     
     def humanPlayer(self):
@@ -37,10 +39,10 @@ class Game:
                     break
     
     def singlePlayer(self):
-        while True:
+        while self.playing:
             self.board.show()
-            if self.board.currentPlayer == 'X':
-                print('Player X is thinking...')
+            if self.board.currentPlayer == 'O':
+                print('Player O is thinking...')
                 self.computerPlayer()
                 if self.board.won():
                     self.board.show()
@@ -64,7 +66,7 @@ class Game:
                     self.board.turn()
 
     def multiPlayer(self):
-        while self.playing == True:
+        while self.playing:
             self.board.show()
             self.humanPlayer()
             if self.board.won():

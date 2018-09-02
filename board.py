@@ -54,31 +54,42 @@ class Board:
         else:
             self.currentPlayer = 'X'
     
-    def winRow(self,boardRow):
+    def depth(self):
+        return len(self.empty_spaces())
+
+    def state(self):
+        if self.won('X') or self.won('O') or self.full():
+            return True
+        else:
+            return False
+
+    def winRow(self,boardRow,player=None):
+        if player == None:
+            player = self.currentPlayer
         
-        if len(list(filter(lambda p: p == self.currentPlayer, boardRow))) == 3:
+        if len(list(filter(lambda p: p == player, boardRow))) == 3:
             return True
         else:
             return False
         
-    
-    def depth(self):
-        return len(self.empty_spaces())
 
-    def won(self):
+    def won(self,player=None):
         # Checks rows
+        if player == None:
+            player = self.currentPlayer
+
         for i in range(Board.size):
-            if self.winRow(self.board[i]):
+            if self.winRow(self.board[i],player):
                 return True
         # Checks columns
         for i in range(Board.size):
-            if self.winRow(transpose(self.board)[i]):
+            if self.winRow(transpose(self.board)[i],player):
                 return True
         # Checks left diagonal
-        if self.winRow(diag(self.board)):
+        if self.winRow(diag(self.board),player):
             return True
         # Checks right diagonal
-        elif self.winRow(rdiag(self.board)):
+        elif self.winRow(rdiag(self.board),player):
             return True
         else:
             return False
