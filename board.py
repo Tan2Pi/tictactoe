@@ -4,6 +4,10 @@ from copy import deepcopy
 class Board:
     size = 3
 
+    conversion = {(0,0): 0, (0,1): 1, (0,2): 2,
+                  (1,0): 3, (1,1): 4, (1,2): 5,
+                  (2,0): 6, (2,1): 7, (2,2): 8}
+
     def __init__(self):
         self.board = [([' ']*Board.size) for row in range(Board.size)]
         self.flatten()
@@ -148,4 +152,40 @@ def transpose(board):
     return [*zip(*board)]
 
 
+def rowWin(boardRow, player):
+    if len(list(filter(lambda p: p == player, boardRow))) == 3:
+            return True
+    else:
+        return False
+
+def won(board, player,size=3):
+    for i in range(size):
+            if rowWin(board[i],player):
+                return True
+        # Checks columns
+    for i in range(size):
+        if rowWin(transpose(board)[i],player):
+            return True
+        # Checks left diagonal
+    if rowWin(diag(board),player):
+            return True
+        # Checks right diagonal
+    elif rowWin(rdiag(board),player):
+        return True
+    else:
+        return False
+
+def empty_squares(board,size=3):
+    squares = []
+    for i in range(size):
+        for j in range(size):
+            if board[i][j] == ' ':
+                squares.append((i,j))
     
+    return squares
+
+def state(board):
+    if won(board, 'X') or won(board, 'O') or len(empty_squares(board)) == 0:
+        return True
+    else:
+        return False
