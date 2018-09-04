@@ -2,42 +2,7 @@ from board import *
 from copy import deepcopy
 from math import inf
 
-
-
-# def miniMax(board, depth):
-
-#     if board.currentPlayer == 'O':
-#         optimal = {'score': -inf, 'i': 0}
-#     else:
-#         optimal = {'score': +inf, 'i': 0}
-
-#     if depth == 0 or board.state():
-#         if board.currentPlayer == 'O' and board.won():
-#             score = 1
-#         elif board.currentPlayer == 'X' and board.won():
-#             score = -1
-#         else:
-#             score = 0
-#         return {'score': score, 'i': 0}
-    
-#     for i in board.empty_spaces():
-#         board.makeMove(i)
-#         board.turn()
-#         rank = miniMax(board, depth-1)
-#         board.flatBoard[i] = ' '
-#         board.turn()
-#         rank['i'] = i
-
-#         if board.currentPlayer == 'O':
-#             if rank['score'] > optimal['score']:
-#                 optimal = rank
-#         else:
-#             if rank['score'] < optimal['score']:
-#                 optimal = rank
-    
-#     return optimal
-
-            
+# https://en.wikipedia.org/wiki/Minimax
 def miniMax(board, depth):
     if depth == 0 or board.state():
         if board.currentPlayer == 'O' and board.won():
@@ -69,6 +34,8 @@ def miniMax(board, depth):
             optimum = min(optimum, value, key = lambda s: s['score'])
         return optimum
 
+
+# https://en.wikipedia.org/wiki/Alpha–beta_pruning
 def alphabeta(board, depth, alpha, beta, player):
     if depth == 0 or state(board):
         if won(board, 'O'):
@@ -100,43 +67,6 @@ def alphabeta(board, depth, alpha, beta, player):
             value['i'], value['j'] = i, j
             optimum = min(optimum, value, key = lambda s: s['score'])
             board[i][j] = ' '
-            beta = min(beta, optimum['score'])
-            if alpha >= beta:
-                break
-    
-    return optimum
-
-def alphabeta(board, depth, alpha, beta, player):
-    if depth == 0 or state(board):
-        if won(board, 'O'):
-            score = 10
-        elif won(board, 'X'):
-            score = -10
-        else:
-            score = 0
-        return {'score': score, 'i': -1, 'j': -1}
-    
-    if player == 'O':
-        optimum = {'score': -inf, 'i': -1, 'j': -1}
-        nextPlayer = 'X'
-    else:
-        optimum = {'score': +inf, 'i': -1, 'j': -1}
-        nextPlayer = 'X'
-    
-    for square in empty_squares(board):
-        i, j = square[0], square[1]
-        board[i][j] = player
-        value =  alphabeta(board, depth-1, alpha, beta, nextPlayer)
-        value['i'], value['j'] = i, j
-        board[i][j] = ' '
-
-        if player == 'O':
-            optimum = max(optimum, value, key = lambda s: s['score'])
-            alpha = max(alpha, optimum['score'])
-            if alpha >= beta:
-                break
-        else:
-            optimum = min(optimum, value, key = lambda s: s['score'])
             beta = min(beta, optimum['score'])
             if alpha >= beta:
                 break
