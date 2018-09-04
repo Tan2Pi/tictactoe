@@ -4,8 +4,8 @@ from copy import deepcopy
 from math import inf
 
 class Game:
-    def computerPlayer(self):
-        move = alphabeta(deepcopy(self.board.board), self.board.depth(), -inf, +inf, 'O')
+    def computerPlayer(self, player):
+        move = alphabeta(deepcopy(self.board.board), self.board.depth(), -inf, +inf, player)
         self.board.makeMove(Board.conversion[(move['i'],move['j'])])
     
     def humanPlayer(self):
